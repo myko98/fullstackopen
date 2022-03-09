@@ -11,6 +11,7 @@ function App() {
   const [showNone, setShowNone] = useState(true)
   const [temp, setTemp] = useState([])
   const [wind, setWind] = useState([])
+  const [weatherIcon, setWeatherIcon] = useState("")
 
   useEffect(() => {
     axios
@@ -51,19 +52,22 @@ function App() {
     //if search filter gives exactly 1 result, we give that country's info
     else if (newCountries.length == 1) {
 
+      const { REACT_APP_WEATHER_KEY } = process.env
       newCountries = newCountries.map((country) => ({ ...country, visibility: 'show' }))
 
       const lat = newCountries[0].latlng[0]
       const lng = newCountries[0].latlng[1]
 
       axios
-      .get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=2f16fda48f4492d5907280b0b72cb154&units=metric`)
-      .then(response => {
-        console.log(response.data)
+        .get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${REACT_APP_WEATHER_KEY}&units=metric`)
+        .then(response => {
+          console.log(response.data)
 
-        setTemp(response.data.main.temp)
-        setWind(response.data.wind.speed)
-      }, [])
+          setTemp(response.data.main.temp)
+          setWind(response.data.wind.speed)
+          setWeatherIcon(response.data.weather[0].icon)
+          console.log(weatherIcon)
+        }, [])
 
       return (
         <>
@@ -73,7 +77,7 @@ function App() {
               <Details country={country} />
               <h1>Weather in {country.capital}</h1>
               <p>temperature {temp}</p>
-              
+              <img src={`http://openweathermap.org/img/wn/${weatherIcon}@2x.png`} alt="" />
               <p>wind {wind}</p>
 
             </>
