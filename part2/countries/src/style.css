@@ -1,0 +1,17 @@
+.hidden {
+  display: none;
+  color: blue;
+  background: red;
+}
+
+.show {
+  display: block;
+}
+
+.red {
+  color: red;
+}
+
+.imgSize {
+  width:15%;
+}
