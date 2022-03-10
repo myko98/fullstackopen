@@ -13,11 +13,12 @@ function App() {
   const [wind, setWind] = useState([])
   const [weatherIcon, setWeatherIcon] = useState("")
 
+  //useEffect will only run once when app initially loads and sets 'countries' state to be an array of all countries from restcountries
+  //will also add the property 'visibility' to every country so that details will be hidden initially
   useEffect(() => {
     axios
       .get('https://restcountries.com/v2/all')
       .then(response => {
-
         const finalList = response.data;
 
         //set a visibility property to all items in array
@@ -25,21 +26,22 @@ function App() {
 
         setCountries(newCountries)
       })
-
-
   }, [])
 
+  //callback function that changes 'showNone' state to false when input field value is greater than 0, else set to true
+  //'showNone' acts as our binary switch that either outputs the entire list of countries if true, or we output the filtered list if false
+  //then set 'filter' state to input field value
   const filterCountry = (event) => {
-    if (event.target.value.length > 0) {
-      setShowNone(false)
-    } else {
-      setShowNone(true)
-    }
+
+    //using ternary operator more instead of if statements!
+    (event.target.value.length > 0) 
+      ? setShowNone(false)
+      : setShowNone(true)
+
     setFilter(event.target.value)
   }
 
   const filteredCountries = (word) => {
-    //not a state
     let newCountries = countries.filter(country => country.name.substring(0, word.length).toLowerCase() == word.toLowerCase())
 
     //if search filter gives more than 10 results
@@ -58,6 +60,7 @@ function App() {
       const lat = newCountries[0].latlng[0]
       const lng = newCountries[0].latlng[1]
 
+      //grab data from weather API
       axios
         .get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${REACT_APP_WEATHER_KEY}&units=metric`)
         .then(response => {
@@ -87,10 +90,11 @@ function App() {
       )
     }
 
+    //when we have between 1-10 results, every country will have a show button
+    //when clicked, show button will change the visibility property between 'show' and 'none' by mapping through our current 'countries' state
+    //we then update our countries state by using 'setCountries'
     const showDetails = (country) => {
-
       const newCountries = countries.map((place) => {
-
         if (country.name == place.name) {
           if (country.visibility == 'none') {
             return { ...place, visibility: "show" }
@@ -100,9 +104,7 @@ function App() {
         }
         return place
       })
-
       setCountries(newCountries)
-
     }
     return (
       <>
@@ -111,7 +113,6 @@ function App() {
             <h1 style={{ display: 'inline-block' }}>{country.name}</h1>
             <button onClick={() => showDetails(country)}>show</button>
             <Details country={country} />
-
           </div>
         ))}
       </>
@@ -135,7 +136,6 @@ function App() {
   return (
     <div className="App">
       <p>find countries <input onChange={filterCountry} type="text" /></p>
-
       {showCountries}
     </div>
   );
