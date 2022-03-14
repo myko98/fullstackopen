@@ -3,6 +3,9 @@ import axios from 'axios'
 import Filter from './components/Filter'
 import Form from './components/Form'
 import List from './components/List'
+import personService from './services/persons'
+
+import { StateContext } from './helpers/Context'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -12,11 +15,10 @@ const App = () => {
   const [filterWord, setFilterWord] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-        console.log('data set')
+    personService
+      .getAll()
+      .then(initialPeople => {
+        setPersons(initialPeople)
       })
   }, [])
 
@@ -34,17 +36,47 @@ const App = () => {
     event.preventDefault();
     const newPerson = { name: newName, number: newNumber }
 
-    //compare current name with persons array
-    const personsJSON = persons.map((person) => JSON.stringify(person.name))
+    //compare current name with persons array names
+    const personsNames = persons.map((person) => person.name.toLowerCase())
 
-    const newPersonJSON = JSON.stringify(newPerson.name)
+    const newPersonName = newPerson.name.toLowerCase()
 
-    if (personsJSON.includes(newPersonJSON)) {
-      window.alert(`${newName} is already added to phonebook`)
-      setNewName('')
+    //if the new person's name is already in persons array, then we ask if they would like to update the number
+    if (personsNames.includes(newPersonName)) {
+
+      const result = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+
+      if (result) {
+        const newPersons = persons.map(person => {
+          if (person.name.toLowerCase() == newPerson.name) {
+
+            //using personService module to perform axios.put request through '.update' method
+            personService.update(person.id, { ...person, number: newPerson.number })
+
+            return { name: person.name, number: newPerson.number }
+          } else {
+            return person
+          }
+        })
+
+        console.log(newPersons)
+
+        //update persons state so db changes reflect on frontend
+        setPersons(newPersons)
+      }
+
     } else {
+
+      personService
+        .create(newPerson)
+        .then(newPerson => {
+          console.log(newPerson)
+        })
+
       setPersons(persons.concat(newPerson))
     }
+    setNewName('')
+    setNewNumber('')
   }
 
   //function call whenever the filter input changes. if filter input has some text, we set showAll state as false and we update the filterWord state to be the input value
@@ -70,10 +102,8 @@ const App = () => {
     ? persons
     : filterName(filterWord)
 
-  console.log(namesToShow)
-
   return (
-    <div>
+    <StateContext.Provider value={{ persons, setPersons }}>
       <h2>Phonebook</h2>
 
       <Filter showNames={showNames} />
@@ -84,8 +114,8 @@ const App = () => {
 
 
       <h2>Numbers</h2>
-      <List namesToShow={namesToShow}/>
-    </div>
+      <List namesToShow={namesToShow} />
+    </StateContext.Provider>
   )
 }
 
