@@ -4,6 +4,7 @@ import Filter from './components/Filter'
 import Form from './components/Form'
 import List from './components/List'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 import { StateContext } from './helpers/Context'
 
@@ -13,6 +14,9 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [filterWord, setFilterWord] = useState('')
+
+  const [notif, setNotif] = useState(null)
+  const [notifColour, setNotifColour] = useState('green')
 
   useEffect(() => {
     personService
@@ -51,7 +55,24 @@ const App = () => {
           if (person.name.toLowerCase() == newPerson.name) {
 
             //using personService module to perform axios.put request through '.update' method
-            personService.update(person.id, { ...person, number: newPerson.number })
+            personService.update(person.id, { ...person, number: newPerson.number }).then(() => {
+              setNotif(`Changed ${person.name}'s number`)
+              setTimeout(() => {
+                setNotif(null)
+              }, 5000)
+            })
+              .catch(error => {
+                setNotif(`User ${person.name} was already removed from server`)
+
+                setNotifColour('red')
+                setTimeout(() => {
+                  setNotif(null)
+                  setNotifColour('green')
+                }, 5000)
+              })
+
+            //send notification when number is changed for 2 seconds
+
 
             return { name: person.name, number: newPerson.number }
           } else {
@@ -59,7 +80,6 @@ const App = () => {
           }
         })
 
-        console.log(newPersons)
 
         //update persons state so db changes reflect on frontend
         setPersons(newPersons)
@@ -70,10 +90,13 @@ const App = () => {
       personService
         .create(newPerson)
         .then(newPerson => {
-          console.log(newPerson)
+          //
+          setNotif(`Added ${newPerson.name}`)
+          setTimeout(() => {
+            setNotif(null)
+          }, 5000)
+          setPersons(persons.concat(newPerson))
         })
-
-      setPersons(persons.concat(newPerson))
     }
     setNewName('')
     setNewNumber('')
@@ -103,7 +126,9 @@ const App = () => {
     : filterName(filterWord)
 
   return (
-    <StateContext.Provider value={{ persons, setPersons }}>
+    <StateContext.Provider value={{ persons, setPersons, setNotif, setNotifColour }}>
+
+      <Notification message={notif} colour={notifColour}></Notification>
       <h2>Phonebook</h2>
 
       <Filter showNames={showNames} />

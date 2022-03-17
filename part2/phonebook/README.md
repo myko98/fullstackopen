@@ -16,4 +16,13 @@ worked on exercises 2.15 - 2.18
 2.18 update number of existing user
 - used axios.put request to update item with specific id (default one assigned by axios)
 
+2.19 toggle notification message when something gets added, changed or deleted
+- create a state that updates a string msg that is dependent on what action is done
+- if user added, output Added ${newPerson.name}
+- if user changed, output Changed ${person.name}'s number
+- if user deleted, output Deleted ${person.name}
+- use setTimeout to set the state back to null after 3 seconds
+- we send this state to our 'Notification' component, that renders a div message conditional on whether or not the message prop is null or not
+
+
 
