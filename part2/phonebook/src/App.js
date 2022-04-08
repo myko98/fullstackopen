@@ -136,8 +136,6 @@ const App = () => {
       <h2>Add a new</h2>
 
       <Form add={add} inputNumber={inputNumber} inputName={inputName} newName={newName} newNumber={newNumber} />
-
-
       <h2>Numbers</h2>
       <List namesToShow={namesToShow} />
     </StateContext.Provider>

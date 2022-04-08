@@ -3,11 +3,13 @@ const { response } = require('express')
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
+const cors = require('cors')
 
+app.use(cors())
 app.use(express.json())
 
 //creating data token
-morgan.token('jsonData', function (req, res) { return JSON.stringify(req.body)})
+morgan.token('jsonData', function (req, res) { return JSON.stringify(req.body) })
 
 app.use(morgan(function (tokens, req, res) {
   return [
@@ -16,7 +18,7 @@ app.use(morgan(function (tokens, req, res) {
     tokens.status(req, res),
     tokens.res(req, res, 'content-length'), '-',
     tokens['response-time'](req, res), 'ms',
-    tokens.jsonData(req,res)
+    tokens.jsonData(req, res)
   ].join(' ')
 })
 )
@@ -40,6 +42,11 @@ let data = [
   {
     "id": 4,
     "name": "Mary Poppendieck",
+    "number": "39-23-6423122"
+  },
+  {
+    "id": 5,
+    "name": "Myko",
     "number": "39-23-6423122"
   }
 ]
@@ -129,7 +136,7 @@ app.post('/api/persons', (req, res) => {
   res.json(person)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-  console.log('server is running')
+  console.log(`Server running on port ${PORT}`)
 })

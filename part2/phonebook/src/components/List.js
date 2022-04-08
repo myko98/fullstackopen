@@ -19,9 +19,6 @@ const deleteItem = (person, setPersons, persons, setNotif, setNotifColour) => {
     const newPersons = persons.filter(item => item.id != person.id)
 
     // passed down setNotif state method so we can update notification text when a person is deleted
-
-
-
     setPersons(newPersons)
   }
 
