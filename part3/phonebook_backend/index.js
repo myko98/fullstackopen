@@ -8,6 +8,8 @@ const cors = require('cors')
 app.use(cors())
 app.use(express.json())
 
+app.use(express.static('build'))
+  
 //creating data token
 morgan.token('jsonData', function (req, res) { return JSON.stringify(req.body) })
 
@@ -73,6 +75,10 @@ let data = [
 //     "number": "39-23-6423122"
 //   }
 // ]
+
+app.get('/', (req, res) => {
+  res.json(data)
+})
 
 app.get('/info', (req, res) => {
   const currentTime = new Date();
