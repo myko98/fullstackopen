@@ -6,9 +6,12 @@ import { StateContext } from '../helpers/Context'
 const deleteItem = (person, setPersons, persons, setNotif, setNotifColour) => {
 
   if (window.confirm('delete for sure?')) {
-    axios.delete(`http://localhost:3001/persons/${person.id}`)
+    axios.delete(`/api/persons/${person.id}`).then((response) => console.log('deleted')).catch((error) => {
+      if (error.response) {
+        console.log(error.response.data); // => the response payload 
+      }
+    });
 
-    console.log(person.id)
     setNotif(`Deleted ${person.name}`)
     setNotifColour('red')
     setTimeout(() => {
@@ -20,6 +23,8 @@ const deleteItem = (person, setPersons, persons, setNotif, setNotifColour) => {
 
     // passed down setNotif state method so we can update notification text when a person is deleted
     setPersons(newPersons)
+
+
   }
 
 }

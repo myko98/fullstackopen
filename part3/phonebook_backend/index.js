@@ -5,11 +5,14 @@ const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
 
+require('dotenv').config();
+const Person = require('./models/person')
+
 app.use(cors())
 app.use(express.json())
 
 app.use(express.static('build'))
-  
+
 //creating data token
 morgan.token('jsonData', function (req, res) { return JSON.stringify(req.body) })
 
@@ -53,29 +56,6 @@ let data = [
   }
 ]
 
-// const data = [
-//   {
-//     "id": 1,
-//     "name": "Arto Hellas",
-//     "number": "040-123456"
-//   },
-//   {
-//     "id": 2,
-//     "name": "Ada Lovelace",
-//     "number": "39-44-5323523"
-//   },
-//   {
-//     "id": 3,
-//     "name": "Dan Abramov",
-//     "number": "12-43-234345"
-//   },
-//   {
-//     "id": 4,
-//     "name": "Mary Poppendieck",
-//     "number": "39-23-6423122"
-//   }
-// ]
-
 app.get('/', (req, res) => {
   res.json(data)
 })
@@ -88,29 +68,46 @@ app.get('/info', (req, res) => {
 
 //get list of all persons
 app.get('/api/persons', (req, res) => {
-  res.json(data)
+  Person.find({}).then(person => {
+    console.log(person)
+    res.json(person)
+  })
 })
 
-//get a specific person
+//3.18 get a specific person
 app.get('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
 
-  const person = data.find(x => x.id == id)
+  // const person = data.find(x => x.id == id)
 
-  if (person) {
-    res.send(person)
-  } else {
-    res.status(404).end()
-  }
-
+  // if (person) {
+  //   res.send(person)
+  // } else {
+  //   res.status(404).end()
+  // }
+  Person.findById(req.params.id)
+    .then(person => {
+      if (person) {
+        res.json(person)
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(500).end()
+    })
 })
 
 //delete a person
 app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
-  data = data.filter(person => person.id != id)
-
-  res.status(204).end()
+  // data = data.filter(person => person.id != id)
+  Person.findByIdAndRemove(req.params.id)
+    .then(result => {
+      res.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 //adding a person
@@ -133,13 +130,32 @@ app.post('/api/persons', (req, res) => {
     ? Math.max(...data.map(n => n.id))
     : 0
 
-  const person = req.body
-  console.log(person)
-  person.id = maxId + 1
+  // const person = req.body
+  // console.log(person)
+  // person.id = maxId + 1
 
+  const person = new Person({
+    name: req.body.name,
+    number: req.body.number
+  })
 
-  data = data.concat(person)
-  res.json(person)
+  person.save().then(savedPerson => {
+    res.json(savedPerson)
+  })
+  // data = data.concat(person)
+  // res.json(person)
+})
+
+//3.17 updating number of person that is already on the list
+app.put('/api/persons/:id', (req, res) => {
+  Person.findByIdAndUpdate(req.params.id, { number: req.body.number }, function (err, docs) {
+    if (err) {
+      console.log(err)
+    }
+    else {
+      console.log('updated the number')
+    }
+  })
 })
 
 const PORT = process.env.PORT || 3001

@@ -15,7 +15,16 @@ Content-Type: application/json
   "number": "369-369-9999"
 }
 
+###
+
+DELETE http://localhost:3001/api/persons/62570a9e23466d639056ddf2
 
 ###
 POST http://localhost:3001/api/persons
 Content-Type: application/json
+
+###
+
+GET http://localhost:3001/api/persons/6257425fe60096c164301c36
+
+
