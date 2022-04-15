@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config()
 const mongoose = require('mongoose')
 
 
@@ -8,8 +8,22 @@ const url =
 mongoose.connect(url)
 
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    minLength: 8,
+    validate: {
+      validator: function(v) {
+        return /^(\d{2}|\d{3})-\d{8}$/.test(v)
+      },
+      message: props => `${props.value} is not a valid phone number`
+    },
+    required: [true, 'Phone number required']
+  }
 })
 
 //gets rid of the 'id' and 'v' key value properties of schema
@@ -20,7 +34,7 @@ personSchema.set('toJSON', {
     delete returnedObject.__v
   }
 })
-  
+
 // const Person = mongoose.model('Person', personSchema)
 
 module.exports = mongoose.model('Person', personSchema)

@@ -62,7 +62,9 @@ const App = () => {
               }, 5000)
             })
               .catch(error => {
-                setNotif(`User ${person.name} was already removed from server`)
+                console.log('error',error)
+                console.log('error.response.data:', error.response.data)
+                setNotif(error.response.data.error)
 
                 setNotifColour('red')
                 setTimeout(() => {
@@ -96,6 +98,14 @@ const App = () => {
             setNotif(null)
           }, 5000)
           setPersons(persons.concat(newPerson))
+        })
+        .catch(error => {
+          setNotif(error.response.data.error)
+          setNotifColour('red')
+          setTimeout(() => {
+            setNotif(null)
+            setNotifColour('green')
+          }, 5000)
         })
     }
     setNewName('')
