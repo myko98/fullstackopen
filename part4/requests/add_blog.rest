@@ -2,8 +2,23 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "3 little pigs",
-  "author": "Steven Kellogg",
+  "title": "league of legends2",
+  "author": "phreak2",
   "url": "abcd",
-  "likes": 100
+  "likes": 100,
+	"userId": "628d239b533f0022664d85b4"
+}
+
+###
+
+DELETE http://localhost:3003/api/blogs/629141f8d7b9005f6366531f
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZha2VyIiwiaWQiOiI2MjhkMjM5YjUzM2YwMDIyNjY0ZDg1YjQiLCJpYXQiOjE2NTM2ODY3NTB9.mboQyglo0ck7r_5hm09Kjo4ocZiI9VKjP3GbLj9cSuk
+
+###
+
+PUT http://localhost:3003/api/blogs/62671a8091aaa44f01c6e729
+Content-Type: application/json
+
+{
+  "likes": 77
 }

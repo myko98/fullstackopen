@@ -2,8 +2,7 @@ require('dotenv').config()
 const mongoose = require('mongoose')
 
 
-const url =
-  `mongodb+srv://myko:${process.env.MONGODB_ATLAS_PW}@fso.ryl6m.mongodb.net/phonebook?retryWrites=true&w=majority`
+const url = process.env.MONGODB_URI
 
 mongoose.connect(url)
 
