@@ -7,13 +7,13 @@ const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
-const getTokenFrom = req => {
-	const authorization = req.get('authorization')
-	if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-		return authorization.substring(7)
-	}
-	return null
-}
+// const getTokenFrom = req => {
+// 	const authorization = req.get('authorization')
+// 	if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+// 		return authorization.substring(7)
+// 	}
+// 	return null
+// }
 
 // routes
 blogsRouter.get('/', async (request, response) => {
@@ -25,18 +25,12 @@ blogsRouter.get('/', async (request, response) => {
 
 blogsRouter.post('/', async (request, response) => {
 	const body = request.body
-	
-	const token = getTokenFrom(request)
-
-	const decodedToken = jwt.verify(token, process.env.SECRET)
-	if (!decodedToken.id) {
-		return response.status(401).json({ error: 'token missing of invalid' })
+	console.log(request.user)
+	if (!request.user) {
+		return response.status(401).json({ error: 'token missing or invalid'})
 	}
-	const user = await User.findById(decodedToken.id)
-
-	// const user = await User.findById(body.userId)
-	console.log(user)
-	console.log(user._id)
+	// const token = getTokenFrom(request)
+	const user = request.user
 
 	const blog = new Blog({
 	title: body.title,
@@ -56,28 +50,24 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (req, res) => {
+	// use token extractor middleware to get user
+	// 
   const id = req.params.id
 
-  const token = getTokenFrom(request)
-
-	const decodedToken = jwt.verify(token, process.env.SECRET)
-	if (!decodedToken.id) {
-		return response.status(401).json({ error: 'token missing of invalid' })
-	}
-	const user = await User.findById(decodedToken.id)
-
+  const user = req.user
 	const blog = await Blog.findById(id)
 
-	// if (blog.user.username === user.username) {
-	// 	await Blog.findByIdAndDelete(id)
-  // 	res.status(204).end()
-	// } else {
-	// 	return response.status(401).json({ error: 'token does not match blog' })
-	// }
+	if (user._id.toString() === blog.user.toString()) {
+		await Blog.findByIdAndDelete(id)
+  	res.status(204).end()
+	} else {
+		return response.status(401).json({ error: 'token does not match blog' })
+	}
 
-  // await Blog.findByIdAndDelete(id)
-  // res.status(204).end()
+  await Blog.findByIdAndDelete(id)
+  res.status(204).end()
 })
+
 
 blogsRouter.put('/:id', async (req, res) => {
   const body = req.body

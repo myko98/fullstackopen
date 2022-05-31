@@ -10,12 +10,18 @@ Content-Type: application/json
 
 post http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZha2VyIiwiaWQiOiI2MjhkMjM5YjUzM2YwMDIyNjY0ZDg1YjQiLCJpYXQiOjE2NTM2ODY3NTB9.mboQyglo0ck7r_5hm09Kjo4ocZiI9VKjP3GbLj9cSuk
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZha2VyIiwiaWQiOiI2MjhkMjM5YjUzM2YwMDIyNjY0ZDg1YjQiLCJpYXQiOjE2NTM5NjYwODR9.ZF-SIn0kQydu79ynrVGyfU53zkYSJVXQpjQ0IsBcEkc
 
 {
-  "title": "try delete this",
+  "title": "try delete this 2",
   "author": "mesiah",
   "url": "abcd",
   "likes": 100,
 	"userId": "628d239b533f0022664d85b4"
 }
+
+###
+
+DELETE http://localhost:3003/api/blogs/629583a6e82d4180c3c68563
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZha2VyIiwiaWQiOiI2MjhkMjM5YjUzM2YwMDIyNjY0ZDg1YjQiLCJpYXQiOjE2NTM5NjYwODR9.ZF-SIn0kQydu79ynrVGyfU53zkYSJVXQpjQ0IsBcEkc

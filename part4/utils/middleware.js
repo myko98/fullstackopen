@@ -1,4 +1,7 @@
+const { request } = require('express')
+const User = require('../models/user')
 const logger = require('./logger')
+const jwt = require('jsonwebtoken')
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
@@ -27,29 +30,27 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
-// const tokenExtractor = (request, response, next) => {
-// 	const getTokenFrom = req => {
-// 		const authorization = req.get('authorization')
-// 		if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-// 			return authorization.substring(7)
-// 		}
-// 		return null
-// 	}
+const tokenExtractor = async (req, res, next) => {
+	// moved from function in blog Router to middleware function
+	const authorization = req.get('authorization')
+	if (authorization && authorization.toLowerCase().startsWith('bearer')) {
+		const decodedToken = jwt.verify(authorization.substring(7), process.env.SECRET)
 
-// 	let token = getTokenFrom(request)
+		if (decodedToken) {
+			// append user property to request object that finds a user with a given id
+			req.user = await User.findById(decodedToken.id)
 
-// 	if (token != null) {
-// 		console.log(token)
-// 		return response.status(400).json({request, token})
-// 	}
+			// now req.user = user that logged in
+		}
+	}
 
-// 	next()
-// }
+	next()
+}
 
 
 module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
-	// tokenExtractor
+	tokenExtractor
 }
